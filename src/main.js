@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import axios from 'axios'
+import http from './http'
 
 // JS imports
 import 'bootstrap'
@@ -20,16 +20,11 @@ library.add(faTimes, faSpinner);
 Vue.component('fa', FontAwesomeIcon);
 
 Vue.config.productionTip = false;
+Vue.prototype.$http = http;
 
 const defaultTitle = 'TCC - Front-End';
 
 document.title = defaultTitle;
-
-const http = axios.create({
-  baseURL: 'http://localhost:8000',
-  headers: {'Authorization': 'Bearer ' + store.state.api_token}
-});
-Vue.prototype.$http = http;
 
 new Vue({
   router,
