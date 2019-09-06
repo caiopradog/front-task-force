@@ -1,0 +1,142 @@
+.select-2 {
+  display: inline-grid;
+  padding: 2px 5px;
+  border: 1px solid;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  position: relative;
+  z-index: 999;
+  min-width: 60px;
+
+  .select-input {
+    position: relative;
+    padding-right: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+
+    .select-name {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      width: 95%;
+    }
+
+    .select-icon {
+      display: inline-block;
+      position: absolute;
+      top: 50%;
+      right: 0;
+      -webkit-transform: translateY(-50%);
+      transform: translateY(-50%);
+      padding-right: 2px;
+      padding-left: 5px;
+      background: #ffffff;
+    }
+  }
+
+  &.form-control {
+    border-color: #ced4da;
+
+    .select-input {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+    }
+
+    .select-popup {
+      border-color: #ced4da;
+    }
+  }
+
+  .select-popup {
+    position: absolute;
+    min-width: 50px;
+    background-color: #fff;
+    padding: 10px;
+    border: 1px solid;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    top: calc(100% + 10px);
+    left: 0;
+    width: 100%;
+
+    &.top {
+      top: unset;
+      bottom: calc(100% + 10px);
+    }
+
+    &.right {
+      left: unset;
+      right: 0;
+    }
+    
+    .select-filter {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-align: left;
+
+      input {
+        width: calc(100% - 30px);
+      }
+    }
+
+    .select-options {
+      max-height: 150px;
+      overflow-y: auto;
+
+      &:not(:first-child) {
+        margin-top: 10px;
+      }
+
+      input {
+        display: none;
+      }
+
+      label {
+        display: block;
+        text-align: left;
+        margin-right: 5px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      input:checked + label {
+        padding: 5px;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;
+        background: $primary;
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  display: none;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
