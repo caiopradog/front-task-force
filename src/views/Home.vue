@@ -62,10 +62,10 @@
               </table>
             </div>
             <div class="table-footer row align-items-center" v-if="tableData.data && tableData.data.length > 0">
-              <div class="col-4">
+              <div class="col-3">
                 Exibindo {{ tableData.from }} a {{ tableData.to }} de {{ tableData.total }}
               </div>
-              <div class="col-4 text-center">
+              <div class="col-6 text-center">
                 <div class="btn-group">
                   <button class="btn btn-outline-primary" v-bind:disabled="tableData.current_page === 1" v-on:click="getTasks(1)">
                     <fa icon="caret-left"></fa>
@@ -88,7 +88,7 @@
                   </button>
                 </div>
               </div>
-              <div class="col-4 text-right">
+              <div class="col-3 text-right">
                 Exibindo
                 <select v-model="tableFilter.perPage">
                   <option value="5">5</option>
