@@ -19,9 +19,9 @@
         <input v-bind:id="name+'none'"  v-bind:key="name+'none'" type="radio" v-bind:name="name" v-bind:value="{name: '',val: ''}" v-model="selected">
         <label v-bind:for="name+'none'">Selecionar</label>
         <template v-for="option in filteredOptions">
-          <input v-bind:id="option.value"  v-bind:key="name+option.value" type="radio" v-bind:name="name"
+          <input v-bind:id="name+option.value"  v-bind:key="name+option.value" type="radio" v-bind:name="name"
                  v-bind:value="option" v-model="selected">
-          <label v-bind:for="option.value" v-bind:key="option.value">{{ option.name }}</label>
+          <label v-bind:for="name+option.value" v-bind:key="option.value">{{ option.name }}</label>
         </template>
       </div>
     </div>

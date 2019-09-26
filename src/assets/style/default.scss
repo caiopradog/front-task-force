@@ -88,7 +88,7 @@
     border-radius: 10px;
     top: calc(100% + 10px);
     left: 0;
-    width: 100%;
+    width: 300px;
     z-index: 999;
 
     &.top {
@@ -113,7 +113,7 @@
     }
 
     .select-options {
-      max-height: 150px;
+      max-height: 200px;
       overflow-y: auto;
 
       &:not(:first-child) {
