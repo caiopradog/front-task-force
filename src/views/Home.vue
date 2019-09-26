@@ -35,6 +35,7 @@
                   <th>Sprint</th>
                   <th>Previsão</th>
                   <th>Realizado</th>
+                  <th>Ações</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -50,12 +51,18 @@
                           {{ data.status }}
                         </span>
                       </td>
-                      <td>{{ data.name }}</td>
-                      <td>{{ data.project.name }}</td>
-                      <td>{{ data.sprint.name }}</td>
-                      <td>{{ data.epic.name }}</td>
+                      <td v-tooltip="data.name">{{ data.name }}</td>
+                      <td v-tooltip="data.project.name">{{ data.project.name }}</td>
+                      <td v-tooltip="data.sprint.name">{{ data.sprint.name }}</td>
+                      <td v-tooltip="data.epic.name">{{ data.epic.name }}</td>
                       <td>{{ data.time_planned | secToHourMin }}</td>
                       <td>{{ data.time_used | secToHourMin }}</td>
+                      <td>
+                        <div class="btn-group btn-group-sm">
+                          <button class="btn btn-sm btn-primary" type="button" v-on:click="editTask(data.id)"><fa icon="pen-square"/></button>
+                          <button class="btn btn-sm btn-danger" type="button"><fa icon="trash"/></button>
+                        </div>
+                      </td>
                     </tr>
                   </template>
                 </tbody>
@@ -68,11 +75,11 @@
               <div class="col-6 text-center">
                 <div class="btn-group">
                   <button class="btn btn-outline-primary" v-bind:disabled="tableData.current_page === 1" v-on:click="getTasks(1)">
-                    <fa icon="caret-left"></fa>
-                    <fa icon="caret-left"></fa>
+                    <fa icon="caret-left"/>
+                    <fa icon="caret-left"/>
                   </button>
                   <button class="btn btn-outline-primary" v-bind:disabled="tableData.current_page === 1" v-on:click="getTasks(tableData.current_page-1)">
-                    <fa icon="caret-left"></fa>
+                    <fa icon="caret-left"/>
                   </button>
                   <button v-for="button in tableButtons" v-bind:key="button" class="btn"
                           v-bind:class="{'btn-outline-primary': button !== tableData.current_page, 'btn-primary': button === tableData.current_page}"
@@ -80,11 +87,11 @@
                     {{ button }}
                   </button>
                   <button class="btn btn-outline-primary" v-bind:disabled="tableData.current_page === tableData.last_page" v-on:click="getTasks(tableData.current_page+1)">
-                    <fa icon="caret-right"></fa>
+                    <fa icon="caret-right"/>
                   </button>
                   <button class="btn btn-outline-primary" v-bind:disabled="tableData.current_page === tableData.last_page" v-on:click="getTasks(tableData.last_page)">
-                    <fa icon="caret-right"></fa>
-                    <fa icon="caret-right"></fa>
+                    <fa icon="caret-right"/>
+                    <fa icon="caret-right"/>
                   </button>
                 </div>
               </div>
@@ -169,25 +176,41 @@
                 }).catch(() => {
                     this.tableData = []
                 })
+            },
+            getTasksStatuses: function () {
+                return this.$http({
+                    url: '/task_statuses'
+                });
+            },
+            getTasksCategories: function () {
+                return this.$http({
+                    url: '/task_categories'
+                });
+            },
+            getProjects: function () {
+                return this.$http({
+                    url: '/projects',
+                    params: {status: "Ativo"}
+                });
+            },
+            editTask: function (id) {
+                this.$store.state.loading = true;
+                this.$router.push({ name: 'task', params: { id: id }});
             }
         },
         mounted: function() {
-            this.$http({
-                url: '/task_statuses'
-            }).then(response => this.statusOpts = response.data);
-
-            this.$http({
-                url: '/task_categories'
-            }).then(response => this.categoriesOpts = response.data);
-
-            this.$http({
-                url: '/projects',
-                params: {status: "Ativo"}
+            this.getTasksStatuses().then(response => {
+                this.statusOpts = response.data
+                return this.getTasksCategories()
+            }).then(response => {
+                this.categoriesOpts = response.data
+                return this.getProjects()
             }).then(response => {
                 for (let data of response.data) {
                     this.projectsOpts.push({name: data.name, value: data.id});
                 }
-            });
+                this.$store.state.loading = false;
+            })
         },
         components: {
             'select-2': Select2

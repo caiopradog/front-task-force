@@ -46,11 +46,7 @@
         computed: {
             shownName: function () {
                 if (this.selected.val === "") {
-                    if (this.default) {
-                        return this.default;
-                    } else {
-                        return this.name;
-                    }
+                    return this.name;
                 } else {
                     return this.selected.name;
                 }
@@ -77,6 +73,13 @@
             selected: function() {
                 this.$emit('change', this.selected.value);
                 this.$emit('input', this.selected.value);
+            },
+            default: function () {
+                for (let option of this.options) {
+                    if (option.value == this.default) {
+                        this.selected = option;
+                    }
+                }
             }
         },
         methods: {
@@ -106,9 +109,11 @@
             ClickOutside
         },
         mounted: function() {
-            for (let option of this.options) {
-                if (option.value == this.default) {
-                    this.selected = option;
+            if (this.default) {
+                for (let option of this.options) {
+                    if (option.value == this.default) {
+                        this.selected = option;
+                    }
                 }
             }
         }
