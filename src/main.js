@@ -1,10 +1,26 @@
 import Vue from 'vue'
 import VueTheMask from 'vue-the-mask'
 import VTooltip from 'v-tooltip'
+import VCalendar from 'v-calendar'
+import Notifications from 'vue-notification'
 import App from './App.vue'
 import router from './router'
 import store from './store'
 import http from './http'
+
+Vue.use(VueTheMask)
+Vue.use(VTooltip)
+Vue.use(VCalendar, {
+    locales: {
+        'pt-PT': {
+            firstDayOfWeek: 1,
+            masks: {
+                L: 'DD/MM/YYYY',
+            }
+        }
+    }
+})
+Vue.use(Notifications)
 
 // JS imports
 import 'bootstrap'
@@ -20,14 +36,15 @@ import {
     faCaretLeft,
     faCaretRight,
     faCaretUp,
-    faPenSquare,
+    faPenSquare, faPlus,
     faSearch, faSpinner,
     faTimes,
     faTrash
 } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faCaretLeft, faCaretRight, faCaretUp, faCaretDown, faTimes, faSearch, faPenSquare, faTrash, faSpinner);
+library.add(faCaretLeft, faCaretRight, faCaretUp, faCaretDown, faTimes, faSearch, faPenSquare, faTrash, faSpinner, faPlus);
 
+Vue.component('fa', FontAwesomeIcon)
 
 Vue.filter('secToHourMin', function (seconds) {
     const h = Math.floor(seconds / 3600);
@@ -49,16 +66,12 @@ Vue.filter('secToTime', function (seconds) {
     ].filter(a => a).join(':');
 });
 
-Vue.use(VTooltip)
-Vue.use(VueTheMask);
-Vue.component('fa', FontAwesomeIcon);
+Vue.config.productionTip = false
+Vue.prototype.$http = http
 
-Vue.config.productionTip = false;
-Vue.prototype.$http = http;
+const defaultTitle = 'TCC - Front-End'
 
-const defaultTitle = 'TCC - Front-End';
-
-document.title = defaultTitle;
+document.title = defaultTitle
 
 new Vue({
     router,

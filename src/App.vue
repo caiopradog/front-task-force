@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <notifications/>
     <div class="loading" v-if="pageLoading">
       <div class="icon">
         <fa icon="spinner" pulse size="6x"></fa>

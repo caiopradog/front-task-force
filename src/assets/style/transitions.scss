@@ -1,0 +1,17 @@
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+.slide-top-enter-active, .slide-top-leave-active {
+  transition: top 750ms, background-color 500ms;
+  top: 0 !important;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.slide-top-enter, .slide-top-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  top: -200px !important;
+  background-color: rgba(0, 0, 0, 0);
+}

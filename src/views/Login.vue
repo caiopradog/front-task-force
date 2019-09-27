@@ -10,7 +10,7 @@
             <form v-on:submit.prevent="getUser" class="mb-2">
               <input class="form-control mb-2" type="text" placeholder="E-mail" v-model="username">
               <input class="form-control mb-2" type="password" placeholder="Senha" v-model="password">
-              <button class="btn btn-primary btn-block" v-bind:disabled="username === '' || password === '' || requesting">Login</button>
+              <button class="btn btn-primary btn-block" :disabled="username === '' || password === '' || requesting">Login</button>
             </form>
             <div class="text-danger text-center" v-if="errorTxt !== ''">{{ errorTxt }}</div>
           </div>

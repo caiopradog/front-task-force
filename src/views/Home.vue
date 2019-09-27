@@ -1,5 +1,21 @@
 <template>
   <div class="container my-5">
+    <transition name="slide-top">
+      <div class="action-confirm" v-if="deleteID">
+        <div class="card">
+          <div class="card-header">
+            Tem certeza que quer deletar a tarefa?
+          </div>
+          <div class="card-body">
+            Essa ação não pode ser desfeita!
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-danger mr-2" v-on:click="deleteTask(deleteID)">Deletar</button>
+            <button class="btn btn-secondary" v-on:click="deleteID = false">Voltar</button>
+          </div>
+        </div>
+      </div>
+    </transition>
     <div class="row">
       <div class="col-12">
         <div class="card">
@@ -12,16 +28,16 @@
                 <input type="text" class="form-control" placeholder="Nome da Tarefa" v-model="tableFilter.search">
               </div>
               <div class="col-3">
-                <select-2 v-bind:name="'Status'" v-bind:component-class="'form-control'" v-bind:options="statusOpts"
+                <select-2 :name="'Status'" :component-class="'form-control'" :options="statusOpts"
                           v-model="tableFilter.status"></select-2>
               </div>
               <div class="col-3">
-                <select-2 v-bind:name="'Categoria'" v-bind:component-class="'form-control'" v-bind:options="categoriesOpts"
+                <select-2 :name="'Categoria'" :component-class="'form-control'" :options="categoriesOpts"
                           v-model="tableFilter.category"></select-2>
               </div>
               <div class="col-3">
-                <select-2 v-bind:name="'Projeto'" v-bind:component-class="'form-control'" v-bind:options="projectsOpts"
-                          v-model="tableFilter.project_id" v-bind:search="true"></select-2>
+                <select-2 :name="'Projeto'" :component-class="'form-control'" :options="projectsOpts"
+                          v-model="tableFilter.project_id" :search="true"></select-2>
               </div>
             </div>
             <div class="table-responsive">
@@ -45,9 +61,9 @@
                     </tr>
                   </template>
                   <template v-else>
-                    <tr v-for="data in tableData.data" v-bind:key="data.id">
+                    <tr v-for="data in tableData.data" :key="data.id">
                       <td>
-                        <span v-bind:class="data.status_badge">
+                        <span :class="data.status_badge">
                           {{ data.status }}
                         </span>
                       </td>
@@ -59,8 +75,8 @@
                       <td>{{ data.time_used | secToHourMin }}</td>
                       <td>
                         <div class="btn-group btn-group-sm">
-                          <button class="btn btn-sm btn-primary" type="button" v-on:click="editTask(data.id)"><fa icon="pen-square"/></button>
-                          <button class="btn btn-sm btn-danger" type="button"><fa icon="trash"/></button>
+                          <button class="btn btn-sm btn-primary" type="button" v-on:click="goToTask(data.id)"><fa icon="pen-square"/></button>
+                          <button class="btn btn-sm btn-danger" type="button" v-on:click="deleteID = data.id"><fa icon="trash"/></button>
                         </div>
                       </td>
                     </tr>
@@ -74,22 +90,22 @@
               </div>
               <div class="col-6 text-center">
                 <div class="btn-group">
-                  <button class="btn btn-outline-primary" v-bind:disabled="tableData.current_page === 1" v-on:click="getTasks(1)">
+                  <button class="btn btn-outline-primary" :disabled="tableData.current_page === 1" v-on:click="getTasks(1)">
                     <fa icon="caret-left"/>
                     <fa icon="caret-left"/>
                   </button>
-                  <button class="btn btn-outline-primary" v-bind:disabled="tableData.current_page === 1" v-on:click="getTasks(tableData.current_page-1)">
+                  <button class="btn btn-outline-primary" :disabled="tableData.current_page === 1" v-on:click="getTasks(tableData.current_page-1)">
                     <fa icon="caret-left"/>
                   </button>
-                  <button v-for="button in tableButtons" v-bind:key="button" class="btn"
-                          v-bind:class="{'btn-outline-primary': button !== tableData.current_page, 'btn-primary': button === tableData.current_page}"
+                  <button v-for="button in tableButtons" :key="button" class="btn"
+                          :class="{'btn-outline-primary': button !== tableData.current_page, 'btn-primary': button === tableData.current_page}"
                           v-on:click="getTasks(button)">
                     {{ button }}
                   </button>
-                  <button class="btn btn-outline-primary" v-bind:disabled="tableData.current_page === tableData.last_page" v-on:click="getTasks(tableData.current_page+1)">
+                  <button class="btn btn-outline-primary" :disabled="tableData.current_page === tableData.last_page" v-on:click="getTasks(tableData.current_page+1)">
                     <fa icon="caret-right"/>
                   </button>
-                  <button class="btn btn-outline-primary" v-bind:disabled="tableData.current_page === tableData.last_page" v-on:click="getTasks(tableData.last_page)">
+                  <button class="btn btn-outline-primary" :disabled="tableData.current_page === tableData.last_page" v-on:click="getTasks(tableData.last_page)">
                     <fa icon="caret-right"/>
                     <fa icon="caret-right"/>
                   </button>
@@ -111,6 +127,9 @@
         </div>
       </div>
     </div>
+    <button class="btn btn-circle btn-outline-primary btn-add btn-lg" v-on:click="goToTask(null)">
+      <fa icon="plus"></fa>
+    </button>
   </div>
 </template>
 
@@ -132,6 +151,7 @@
                 statusOpts: [],
                 projectsOpts: [],
                 categoriesOpts: [],
+                deleteID: false,
                 timeout: false
             }
         },
@@ -193,7 +213,20 @@
                     params: {status: "Ativo"}
                 });
             },
-            editTask: function (id) {
+            deleteTask: function (id) {
+                return this.$http({
+                    url: '/task/'+id,
+                    method: 'delete',
+                }).then(response => {
+                    this.deleteID = false;
+                    this.$notify({
+                        text: response.data.msg,
+                        type: 'success'
+                    });
+                    this.getTasks(false);
+                });
+            },
+            goToTask: function (id) {
                 this.$store.state.loading = true;
                 this.$router.push({ name: 'task', params: { id: id }});
             }

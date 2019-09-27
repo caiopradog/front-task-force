@@ -75,10 +75,12 @@
                 this.$emit('input', this.selected.value);
             },
             default: function () {
-                for (let option of this.options) {
-                    if (option.value == this.default) {
-                        this.selected = option;
-                    }
+                this.selectDefaultOption();
+            },
+            options: {
+                deep: true,
+                handler() {
+                    this.selectDefaultOption();
                 }
             }
         },
@@ -88,6 +90,17 @@
             },
             openSelect: function () {
                 this.open = true;
+            },
+            selectDefaultOption() {
+                this.selected = {
+                    name: '',
+                    val: ''
+                };
+                for (let option of this.options) {
+                    if (option.value == this.default) {
+                        this.selected = option;
+                    }
+                }
             }
         },
         props: {
