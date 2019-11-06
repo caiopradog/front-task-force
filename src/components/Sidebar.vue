@@ -32,7 +32,7 @@
         methods: {
             goToPage: function (page) {
                 this.$store.state.loading = true;
-                this.$router.push(page);
+                this.$router.replace({'name': page});
             }
         }
     }
