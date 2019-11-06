@@ -31,19 +31,9 @@ import '@/assets/style/main.scss'
 // font-awesome imports
 import {library} from '@fortawesome/fontawesome-svg-core'
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
-import {
-    faCaretDown,
-    faCaretLeft,
-    faCaretRight,
-    faCaretUp,
-    faPenSquare, faPlus,
-    faSearch, faSpinner,
-    faTimes,
-    faTrash
-} from "@fortawesome/free-solid-svg-icons";
+import {fas} from "@fortawesome/free-solid-svg-icons";
 
-library.add(faCaretLeft, faCaretRight, faCaretUp, faCaretDown, faTimes, faSearch, faPenSquare, faTrash, faSpinner, faPlus);
-
+library.add(fas);
 Vue.component('fa', FontAwesomeIcon)
 
 Vue.filter('secToHourMin', function (seconds) {
@@ -66,12 +56,23 @@ Vue.filter('secToTime', function (seconds) {
     ].filter(a => a).join(':');
 });
 
+Vue.filter('date', function (date) {
+    date = date.split('-');
+    return date[2]+'/'+date[1]+'/'+date[0];
+});
+
+Vue.filter('datetime', function (datetime) {
+    datetime = datetime.split(' ');
+    let date = datetime[0];
+    let time = datetime[1];
+    date = date.split('-');
+    return date[2]+'/'+date[1]+'/'+date[0]+" "+time;
+});
+
 Vue.config.productionTip = false
 Vue.prototype.$http = http
 
 const defaultTitle = 'TCC - Front-End'
-
-document.title = defaultTitle
 
 new Vue({
     router,
@@ -79,7 +80,27 @@ new Vue({
     render: h => h(App),
     watch: {
         $route(to) {
-            document.title = to.title || defaultTitle
+            document.title = to.meta.title || defaultTitle
+        },
+        "store.state.user": function (data) {
+            if (data){
+                localStorage.user = data;
+            } else {
+                this.$router.go(-100);
+                if (this.$route.name != 'login') {
+                    this.$router.replace('/');
+                }
+            }
+        }
+    },
+    mounted() {
+        document.title = this.$route.meta.title || defaultTitle
+
+        if (!store.state.user) {
+            this.$router.go(-100);
+            if (this.$route.name != 'login') {
+                this.$router.replace('/');
+            }
         }
     }
 }).$mount('#app')

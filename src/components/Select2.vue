@@ -1,6 +1,6 @@
 <template>
   <div class="select-2" v-bind:class="componentClass" v-click-outside="closeSelect">
-    <div class="select-input" v-on:click="openSelect">
+    <div class="select-input" v-on:click="toggleSelect">
       <div class="select-name">
         {{ shownName }}
       </div>
@@ -88,8 +88,8 @@
             closeSelect: function () {
                 this.open = false;
             },
-            openSelect: function () {
-                this.open = true;
+            toggleSelect: function () {
+                this.open = !this.open;
             },
             selectDefaultOption() {
                 this.selected = {

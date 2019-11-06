@@ -1,5 +1,5 @@
 <template>
-  <div class="container my-5">
+  <div>
     <div class="row">
       <div class="col-12">
         <div class="card">
@@ -196,6 +196,7 @@
                         type: 'success'
                     });
                     this.id = response.data.task.id;
+                    this.$route.meta.title = 'Editar Tarefa';
                 }).catch(error => {
                       this.error = error.response.data.errors;
                 }).finally(() => {
@@ -318,6 +319,11 @@
         },
         mounted() {
             this.fetchAllData();
+            if (this.id) {
+                this.$route.meta.title = 'Editar Tarefa';
+            } else {
+                this.$route.meta.title = 'Criar Tarefa';
+            }
         },
         components: {
             'select-2': Select2,

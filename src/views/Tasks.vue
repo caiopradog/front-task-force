@@ -1,5 +1,5 @@
 <template>
-  <div class="container my-5">
+  <div>
     <transition name="slide-top">
       <div class="action-confirm" v-if="deleteID">
         <div class="card">
@@ -63,7 +63,7 @@
                   <template v-else>
                     <tr v-for="data in tableData.data" :key="data.id">
                       <td>
-                        <span :class="data.status_badge">
+                        <span class="badge" :class="'badge-'+data.status_color">
                           {{ data.status }}
                         </span>
                       </td>
@@ -127,7 +127,7 @@
         </div>
       </div>
     </div>
-    <button class="btn btn-circle btn-outline-primary btn-add btn-lg" v-on:click="goToTask(null)">
+    <button class="btn btn-circle btn-primary btn-add btn-lg" v-on:click="goToTask(null)">
       <fa icon="plus"></fa>
     </button>
   </div>
@@ -136,13 +136,13 @@
 <script>
     import Select2 from '../components/Select2';
     export default {
-        name: 'Home',
+        name: 'Tasks',
         data: function () {
             return {
                 tableFilter: {
                     search: '',
                     status: '',
-                    project_id: '',
+                    projectId: '',
                     category: '',
                     page: 1,
                     perPage: 15,

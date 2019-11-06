@@ -5,7 +5,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
-        api_token: localStorage.api_token || '',
-        loading: false,
+        user: localStorage.user ? JSON.parse(localStorage.user) : false,
+        loading: true,
     }
 })

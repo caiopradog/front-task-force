@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-5">
+  <div class="container">
     <div class="row">
       <div class="col-6 offset-3">
         <div class="card">
@@ -49,19 +49,20 @@
 
                 }).then(response => {
                     this.userData = response.data;
-                    localStorage.api_token = response.data.api_token;
-                    this.$store.state.api_token = response.data.api_token;
-                    this.$http.defaults.headers['Authorization'] = 'Bearer ' + this.$store.state.api_token;
+                    localStorage.user = JSON.stringify(response.data);
+                    this.$store.state.user = response.data;
+                    this.$http.defaults.headers['Authorization'] = 'Bearer ' + response.data.api_token;
 
-                    this.$router.push('/home');
+                    this.$router.push('tasks');
                 })
                     .catch(error => this.errorTxt = error.response.data.msg)
                     .finally(() => this.requesting = false)
             },
         },
         mounted: function () {
-            if (this.$store.state.api_token !== '') {
-                this.$router.push('/home');
+            this.$store.state.loading = false;
+            if (this.$store.state.user) {
+                this.$router.push('/tasks');
             }
         }
     }
