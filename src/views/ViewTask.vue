@@ -103,7 +103,7 @@
             <div class="text">{{ createdTaskText }}</div>
             <div class="info">{{ task.created_at | datetime }}</div>
           </div>
-          <div class="log" v-for="log in taskLogs">
+          <div class="log" v-for="log in taskLogs" :key="log.created+log.user">
             <div class="text">{{ log.text }}</div>
             <div class="info">{{ log.user }} - {{ log.created | datetime }}</div>
           </div>
@@ -242,9 +242,6 @@
         },
         mounted() {
             this.fetchAllData();
-        },
-        components: {
-            'select-2': Select2,
         }
     }
 </script>
