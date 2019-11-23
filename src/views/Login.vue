@@ -4,7 +4,7 @@
       <div class="col-6 offset-3">
         <div class="card">
           <div class="card-header">
-            Teste Login
+            Login
           </div>
           <div class="card-body">
             <form v-on:submit.prevent="getUser" class="mb-2">

@@ -7,11 +7,11 @@
 
 .slide-top-enter-active, .slide-top-leave-active {
   transition: top 750ms, background-color 500ms;
-  top: 0 !important;
+  top: -50px !important;
   background-color: rgba(0, 0, 0, 0.75);
 }
 
 .slide-top-enter, .slide-top-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  top: -200px !important;
+  top: -250px !important;
   background-color: rgba(0, 0, 0, 0);
 }

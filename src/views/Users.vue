@@ -51,19 +51,6 @@
                 </div>
               </div>
               <div class="col-3">
-                <div class="form-group" :class="{'error': error.start_date}">
-                  <label>Data de Início</label>
-                  <v-date-picker v-model="task.start_date" locale="pt-PT" :format="'dd/MM/yyyy'"
-                                 :input-props="{
-                                    placeholder: 'Data de Entrega',
-                                    class: 'form-control'
-                                 }"></v-date-picker>
-                  <template v-if="error.start_date">
-                    <small class="form-text text-danger" v-for="msg in error.start_date" :key="'deadline-error-'+msg">{{ msg }}</small>
-                  </template>
-                </div>
-              </div>
-              <div class="col-3">
                 <div class="form-group" :class="{'error': error.project_id}">
                   <label>Projeto</label>
                   <select-2 :name="'Projeto'" :component-class="'form-control'" :options="projectsOpts"
@@ -130,16 +117,16 @@
                   </template>
                 </div>
               </div>
-<!--              <div class="col-3">-->
-<!--                <div class="form-group" :class="{'error': error.qa_user_id}">-->
-<!--                  <label>Responsável Qualidade</label>-->
-<!--                  <select-2 :name="'Responsável Qualidade'" :component-class="'form-control'" :options="usersOpts"-->
-<!--                            v-model="task.qa_user_id" :search="true" :default="task.qa_user_id"/>-->
-<!--                  <template v-if="error.qa_user_id">-->
-<!--                    <small class="form-text text-danger" v-for="msg in error.qa_user_id" :key="'qa_user_id-error-'+msg">{{ msg }}</small>-->
-<!--                  </template>-->
-<!--                </div>-->
-<!--              </div>-->
+              <div class="col-3">
+                <div class="form-group" :class="{'error': error.qa_user_id}">
+                  <label>Responsável Qualidade</label>
+                  <select-2 :name="'Responsável Qualidade'" :component-class="'form-control'" :options="usersOpts"
+                            v-model="task.qa_user_id" :search="true" :default="task.qa_user_id"/>
+                  <template v-if="error.qa_user_id">
+                    <small class="form-text text-danger" v-for="msg in error.qa_user_id" :key="'qa_user_id-error-'+msg">{{ msg }}</small>
+                  </template>
+                </div>
+              </div>
               <div class="col-12">
                 <hr>
                 <label>Descrição</label>
@@ -168,7 +155,6 @@
                     status: '',
                     category: '',
                     deadline: '',
-                    start_date: '',
                     project_id: 0,
                     sprint_id: 0,
                     epic_id: 0,
@@ -295,8 +281,7 @@
                     let taskInfo = response.data;
                     taskInfo.time_planned = this.secToTime(taskInfo.time_planned);
                     taskInfo.time_used = this.secToTime(taskInfo.time_used);
-                    taskInfo.deadline = new Date(taskInfo.deadline);
-                    taskInfo.start_date = new Date(taskInfo.start_date);
+                    taskInfo.deadline = new Date(taskInfo.deadline+" 00:00:00");
 
                     this.fetchEpicAndSprint(taskInfo.project_id).finally(() => {
                         this.task = taskInfo;

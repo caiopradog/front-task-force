@@ -56,24 +56,27 @@
                   </template>
                 </div>
               </div>
-              <div class="col-12">
-                <hr>
-              </div>
-              <div class="col-12 mb-2">
-                <h5>Habilidades</h5>
-              </div>
-              <div class="col-3" v-for="skill in skills" :key="skill">
-                <div class="form-group" :class="{'error': error.name}">
-                  <label>{{ skill }}</label>
-                  <input type="number" class="form-control" :placeholder="skill" v-model="user.skills[skill]">
+              <template v-if="$store.state.user.user_group_id == 1">
+                <div class="col-12">
+                  <hr>
                 </div>
-              </div>
+                <div class="col-12 mb-2">
+                  <h5>Habilidades</h5>
+                </div>
+                <div class="col-3" v-for="skill in skills" :key="skill">
+                  <div class="form-group" :class="{'error': error.name}">
+                    <label>{{ skill }}</label>
+                    <input type="number" class="form-control" :placeholder="skill" v-model="user.skills[skill]">
+                  </div>
+                </div>
+              </template>
               <div class="col-12">
                 <hr>
               </div>
               <div class="col-12 mt-3">
                 <button class="btn btn-primary mr-2" v-on:click="saveUser" v-bind:disabled="request" type="button">Salvar</button>
                 <button class="btn btn-light mr-2" v-on:click="goBack" type="button">Voltar</button>
+                <button class="btn btn-outline-danger mr-2" v-on:click="logout" type="button">Logout</button>
               </div>
             </div>
           </div>
@@ -154,14 +157,6 @@
                     }
                 });
             },
-            // getCompanies: function () {
-            //     return this.$http({
-            //         url: '/companies',
-            //         params: {
-            //             status: "Ativo"
-            //         }
-            //     });
-            // },
             getCurrentUser: function () {
                 return this.$http({
                     url: '/user/'+this.id
@@ -207,11 +202,16 @@
                     } else {
                         this.$store.state.loading = false;
                     }
-                });
+                }).catch(() => this.logout());
             },
             goBack: function () {
                 this.$store.state.loading = true;
                 this.$router.back();
+            },
+            logout: function () {
+                this.$store.state.user = false;
+                this.$router.go(-100);
+                this.$router.replace('/');
             },
             secToTime: function (seconds) {
                 const h = Math.floor(seconds / 3600);

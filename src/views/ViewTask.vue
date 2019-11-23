@@ -15,31 +15,42 @@
       <div class="col-3">
         <div class="card">
           <div class="card-header">
-            <div class="btn-group btn-group-sm">
+            <div class="btn-group btn-group-sm" v-on:click="updateStatus()">
               <button class="btn" :class="'btn-outline-'+task.status_color">{{ task.status }}</button>
-              <button class="btn" :class="'btn-outline-'+task.status_color">
+              <button class="btn" :class="'btn-outline-'+task.status_color"
+                      v-if="task.status !== 'Qualidade' && task.status !== 'Finalizado'">
                 <fa icon="caret-right"></fa>
               </button>
             </div>
-            <button class="ml-3 btn btn-sm btn-outline-success">
+            <button class="ml-3 btn btn-sm btn-outline-success"
+                    v-if="task.status !== 'Qualidade' && task.status !== 'Finalizado'"
+                    v-on:click="updateStatus('Finalizado')">
               <fa icon="check"></fa>
             </button>
+            <template v-else-if="task.status === 'Qualidade'">
+              <button class="ml-3 btn btn-sm btn-outline-success" v-on:click="approveTask()">
+                <fa icon="thumbs-up"></fa>
+              </button>
+              <button class="ml-3 btn btn-sm btn-outline-danger" v-on:click="reproveTask()">
+                <fa icon="thumbs-down"></fa>
+              </button>
+            </template>
           </div>
           <div class="card-body">
             <div class="row mb-2">
               <div class="col-6">
-                Início:
+                Data de início:
               </div>
               <div class="col-6">
-                {{ task.start_date | date }}
+                {{ task.start_date | datetime }}
               </div>
             </div>
             <div class="row mb-2">
               <div class="col-6">
-                Entrega:
+                Data da entrega:
               </div>
               <div class="col-6">
-                {{ task.deadline | date }}
+                {{ task.deadline | datetime }}
               </div>
             </div>
             <div class="row mb-2">
@@ -55,7 +66,7 @@
                 Horas utilizadas:
               </div>
               <div class="col-6">
-                {{ task.time_used | secToHourMin }}
+                {{ hoursUsed | secToHourMin }}
               </div>
             </div>
             <div class="row mb-2">
@@ -88,7 +99,10 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-6 offset-3">
+              <div class="col-5 offset-1">
+                <button class="btn btn-block btn-outline-success" v-on:click="goBackAndSave()">Salvar e Voltar</button>
+              </div>
+              <div class="col-5">
                 <button class="btn btn-block btn-outline-light" v-on:click="goBack()">Voltar</button>
               </div>
             </div>
@@ -103,17 +117,20 @@
             <div class="text">{{ createdTaskText }}</div>
             <div class="info">{{ task.created_at | datetime }}</div>
           </div>
-          <div class="log" v-for="log in taskLogs" :key="log.created+log.user">
-            <div class="text">{{ log.text }}</div>
-            <div class="info">{{ log.user }} - {{ log.created | datetime }}</div>
+          <div class="log" v-for="log in taskLogs" :key="log.id">
+            <div class="text" v-html="log.comment"></div>
+            <div class="info">{{ logInfo(log) }}</div>
           </div>
         </div>
         <form class="log-input" v-on:submit.prevent="addToLogs()">
-          <input type="text" v-model="taskLog.text" placeholder="Crie uma nova interação">
-          <button type="button" class="btn btn-outline-light border-0">
+          <input type="text" v-model="taskLog.comment" class="comment-text" placeholder="Adicione um comentário">
+          <button type="button" class="btn border-0" v-on:click="showCommentTime = !showCommentTime"
+                  :class="{'btn-outline-light': !showCommentTime, 'btn-light time-open': showCommentTime}">
             <fa icon="stopwatch"></fa>
           </button>
-          <button class="btn btn-outline-light border-0">
+          <the-mask :mask="['#:##', '##:##']" :masked="true" class="comment-time" :class="{'show': showCommentTime}"
+                    placeholder="Horas" v-model="taskLog.time"/>
+          <button class="btn btn-outline-light border-0 ml-2">
             <fa icon="paper-plane"></fa>
           </button>
         </form>
@@ -123,7 +140,6 @@
 </template>
 
 <script>
-    import Select2 from '../components/Select2';
     export default {
         name: 'ViewTask',
         data: function () {
@@ -133,6 +149,7 @@
                     status: '',
                     category: '',
                     deadline: '',
+                    start_date: '',
                     project_id: 0,
                     sprint_id: 0,
                     epic_id: 0,
@@ -142,49 +159,82 @@
                     qa_user_id: 0,
                     dev_user_id: 0,
                     description: '',
+                    project: {
+                        name: ''
+                    },
+                    dev_user: {
+                        name: ''
+                    },
                 },
                 taskLog: {
-                    text: '',
+                    comment: '',
                     time: ''
                 },
-                taskLogs: [{
-                    text: 'Desenvolvimento da funcionalidade de criação, edição e remoção de tarefas',
-                    time: '',
-                    user: 'Caio do Prado Gralho',
-                    created: '2019-11-15 12:25:13'
-                }],
+                taskLogs: [],
                 error: {},
                 statusOpts: [],
+                showCommentTime: false,
                 request: false,
+                commentRequest: false,
                 id: this.$route.params.id,
             }
         },
         computed: {
             createdTaskText: function () {
-                let user = this.task.created_user.name;
-                if (this.task.user_created_id == this.$store.state.user.id) {
-                    user = "Você";
-                }
+                if (this.task.created_user) {
+                    let user = this.task.created_user.name;
+                    if (this.task.user_created_id == this.$store.state.user.id) {
+                        user = "Você";
+                    }
 
-                return user+" criou a tarefa";
+                    return user+" criou a tarefa";
+                }
+                return 'Tarefa criada';
+            },
+            hoursUsed: function () {
+                return this.taskLogs.map(a => a.time).reduce((a, b) => a+b, 0)
             }
         },
         methods: {
+            logInfo: function (log) {
+                return [
+                    log.user,
+                    log.time > 0 ? this.$options.filters.secToHourMin(log.time) : 0,
+                    this.$options.filters.datetime(log.created)
+                ].filter(a => a).join(' - ');
+            },
             addToLogs: function () {
-                let log = JSON.parse(JSON.stringify(this.taskLog));
-                log.created = '2019-01-01 00:13:39';
-                log.created = this.$store.state.user.name;
-                this.taskLogs.push(log);
-                this.taskLog.text = '';
-                this.taskLog.time = '';
+                if (this.taskLog.comment !== "" && !this.commentRequest) {
+                    this.commentRequest = this.$http({
+                        url: '/add_task_comment/'+this.id,
+                        method: 'put',
+                        data: this.taskLog
+                    }).then(response => {
+                        this.taskLogs.push({
+                            id: response.data.comment.id,
+                            comment: response.data.comment.html_comment,
+                            time: response.data.comment.time,
+                            user: response.data.comment.user,
+                            created: response.data.comment.created_at,
+                            class: response.data.comment.css_class
+                        });
+                        this.$notify({
+                            text: response.data.msg,
+                            type: 'success'
+                        });
+                        this.taskLog.comment = '';
+                        this.taskLog.time = '';
+                    }).catch(error => {
+                        this.error = error.response.data.errors;
+                    }).finally(() => {
+                        this.commentRequest = false;
+                    });
+                }
             },
             saveTask: function () {
                 this.request = true;
 
-                let url = '/task';
-                if (this.id) {
-                    url += '/'+this.id;
-                }
+                let url = '/task/'+this.id;
 
                 this.$http({
                     url: url,
@@ -196,10 +246,8 @@
                         text: response.data.msg,
                         type: 'success'
                     });
-                    this.id = response.data.task.id;
-                    this.$route.meta.title = 'Editar Tarefa';
                 }).catch(error => {
-                      this.error = error.response.data.errors;
+                    this.error = error.response.data.errors;
                 }).finally(() => {
                     this.request = false;
                 });
@@ -224,8 +272,86 @@
                     return this.getCurrentTask()
                 }).then(response => {
                     this.task = response.data;
+                    this.taskLogs = response.data.task_comments.map(log => {
+                        return {
+                            comment: log.html_comment,
+                            time: log.time,
+                            type: log.type,
+                            created: log.created_at,
+                            user: log.created_user.name,
+                            class: log.css_class,
+                        }
+                    });
                     this.$store.state.loading = false;
+                }).catch(() => {
+                    this.$store.state.user = false;
+                    this.$router.go(-100);
+                    this.$router.replace('/');
                 });
+            },
+            updateStatus: function (status) {
+                if (this.task.status !== 'Qualidade' && this.task.status !== 'Finalizado') {
+                    this.$http({
+                        url: '/update_status/'+this.id,
+                        method: 'post',
+                        params: {
+                            status: status
+                        }
+                    }).then(response => {
+                        this.task.status = response.data.task.status;
+                        this.task.status_color = response.data.task.status_color;
+                        this.taskLogs.push({
+                            id: response.data.comment.id,
+                            comment: response.data.comment.html_comment,
+                            time: response.data.comment.time,
+                            user: response.data.comment.user,
+                            created: response.data.comment.created_at,
+                            class: response.data.comment.css_class
+                        });
+                    });
+                }
+            },
+            approveTask: function () {
+                if (this.task.status === 'Qualidade') {
+                    this.$http({
+                        url: '/approve_task/'+this.id,
+                        method: 'post'
+                    }).then(response => {
+                        this.task.status = response.data.task.status;
+                        this.task.status_color = response.data.task.status_color;
+                        this.taskLogs.push({
+                            id: response.data.comment.id,
+                            comment: response.data.comment.html_comment,
+                            time: response.data.comment.time,
+                            user: response.data.comment.user,
+                            created: response.data.comment.created_at,
+                            class: response.data.comment.css_class
+                        });
+                    });
+                }
+            },
+            reproveTask: function () {
+                if (this.task.status === 'Qualidade') {
+                    this.$http({
+                        url: '/reprove_task/'+this.id,
+                        method: 'post'
+                    }).then(response => {
+                        this.task.status = response.data.task.status;
+                        this.task.status_color = response.data.task.status_color;
+                        this.taskLogs.push({
+                            id: response.data.comment.id,
+                            comment: response.data.comment.html_comment,
+                            time: response.data.comment.time,
+                            user: response.data.comment.user,
+                            created: response.data.comment.created_at,
+                            class: response.data.comment.css_class
+                        });
+                    });
+                }
+            },
+            goBackAndSave: function () {
+                this.saveTask();
+                this.goBack();
             },
             goBack: function () {
                 this.$store.state.loading = true;

@@ -120,12 +120,6 @@
                     url: '/task_statuses'
                 });
             },
-            assignTasks: function () {
-                return this.$http({
-                    url: '/assign_tasks',
-                    method: "POST"
-                });
-            },
             getTasksCategories: function () {
                 return this.$http({
                     url: '/task_categories'
@@ -144,7 +138,7 @@
             },
             goToTask: function (id) {
                 this.$store.state.loading = true;
-                this.$router.push({ name: 'view_task', params: { id: id }});
+                this.$router.push({ name: 'view-task', params: { id: id }});
             }
         },
         mounted: function() {
@@ -164,6 +158,10 @@
                     this.projectsOpts.push({name: data.name, value: data.id});
                 }
                 this.$store.state.loading = false;
+            }).catch(() => {
+                this.$store.state.user = false;
+                this.$router.go(-100);
+                this.$router.replace('/');
             })
         },
         components: {

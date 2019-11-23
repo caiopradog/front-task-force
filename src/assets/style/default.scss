@@ -148,7 +148,7 @@
   }
 }
 .action-confirm {
-  position: absolute;
+  position: fixed;
   z-index: 999;
   top: 0;
   bottom: 0;
@@ -445,6 +445,17 @@
   }
 }
 
+.btn.btn-outline-purple {
+  color: $purple;
+  border-color: $purple;
+  filter: brightness(2);
+
+  &:hover {
+    background-color: $purple;
+    color: $white;
+  }
+}
+
 .badge.badge-purple {
   background: $purple;
   border-color: $purple;
@@ -487,7 +498,8 @@
     padding: .75rem 1.25rem;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-    min-height: 450px;
+    height: 450px;
+    overflow-y: auto;
 
     .log {
       display: flex;
@@ -513,15 +525,43 @@
     background: $primary;
     padding: 0.5rem 1.25rem;
 
-    input {
+    .comment-text {
       background: transparent;
       border: none;
       width: 100%;
-      color: $white;
+      color: $gray-300;
       padding: 0 5px;
+      margin-right: 10px;
 
       &::placeholder {
         color: $gray-600;
+      }
+    }
+
+    .time-open {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .comment-time {
+      border: 2px solid transparent;
+      transition: width .5s, padding-left .4s, border-color 0s .35s;
+      width: 0;
+      padding-left: 0;
+      background: transparent;
+      border-top-right-radius: 5px;
+      border-bottom-right-radius: 5px;
+      color: $gray-300;
+
+      &::placeholder {
+        color: $gray-600;
+      }
+
+      &.show {
+        transition: width .5s, border-color 0s 0s;
+        border-color: $light;
+        width: 100px;
+        padding-left: 10px;
       }
     }
   }

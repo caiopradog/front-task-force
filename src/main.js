@@ -40,8 +40,8 @@ Vue.filter('secToHourMin', function (seconds) {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     return [
-        h,
-        m > 9 ? m : (h ? '0' + m : m || '0'),
+        h > 9 ? h : (h > 0 ? '0' + h : '00'),
+        m > 9 ? m : (m > 0 ? '0' + m : '00'),
     ].filter(a => a).join(':');
 });
 
@@ -50,23 +50,29 @@ Vue.filter('secToTime', function (seconds) {
     const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
     return [
-        h,
-        m > 9 ? m : (h ? '0' + m : m || '0'),
-        s > 9 ? s : '0' + s,
+        h > 9 ? h : (h > 0 ? '0' + h : '00'),
+        m > 9 ? m : (m > 0 ? '0' + m : '00'),
+        s > 9 ? s : (s > 0 ? '0' + s : '00'),
     ].filter(a => a).join(':');
 });
 
 Vue.filter('date', function (date) {
-    date = date.split('-');
-    return date[2]+'/'+date[1]+'/'+date[0];
+    if (date) {
+        date = date.split(' ');
+        date = date[0];
+        date = date.split('-');
+        return date[2]+'/'+date[1]+'/'+date[0];
+    } return ''
 });
 
 Vue.filter('datetime', function (datetime) {
-    datetime = datetime.split(' ');
-    let date = datetime[0];
-    let time = datetime[1];
-    date = date.split('-');
-    return date[2]+'/'+date[1]+'/'+date[0]+" "+time;
+    if (datetime) {
+        datetime = datetime.split(' ');
+        let date = datetime[0];
+        let time = datetime[1];
+        date = date.split('-');
+        return date[2]+'/'+date[1]+'/'+date[0]+" "+time;
+    } return ''
 });
 
 Vue.config.productionTip = false

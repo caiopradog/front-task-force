@@ -4,13 +4,13 @@
       <div class="action-confirm" v-if="deleteID">
         <div class="card">
           <div class="card-header">
-            Tem certeza que quer deletar a tarefa?
+            Tem certeza que quer deletar o épico?
           </div>
           <div class="card-body">
             Essa ação não pode ser desfeita!
           </div>
           <div class="card-footer">
-            <button class="btn btn-danger mr-2" v-on:click="deleteTask(deleteID)">Deletar</button>
+            <button class="btn btn-danger mr-2" v-on:click="deleteEpic(deleteID)">Deletar</button>
             <button class="btn btn-secondary" v-on:click="deleteID = false">Voltar</button>
           </div>
         </div>
@@ -20,7 +20,7 @@
       <div class="col-12">
         <div class="card">
           <div class="card-header">
-            Tarefas
+            Projetos
           </div>
           <div class="card-body">
             <div class="row mb-3">
@@ -32,12 +32,8 @@
                           v-model="tableFilter.status"></select-2>
               </div>
               <div class="col-3">
-                <select-2 :name="'Categoria'" :component-class="'form-control'" :options="categoriesOpts"
-                          v-model="tableFilter.category"></select-2>
-              </div>
-              <div class="col-3">
                 <select-2 :name="'Projeto'" :component-class="'form-control'" :options="projectsOpts"
-                          v-model="tableFilter.project_id" :search="true"></select-2>
+                          v-model="tableFilter.project_id"></select-2>
               </div>
             </div>
             <div class="table-responsive">
@@ -47,10 +43,6 @@
                   <th>Status</th>
                   <th>Nome</th>
                   <th>Projeto</th>
-                  <th>Épico</th>
-                  <th>Sprint</th>
-                  <th>Previsão</th>
-                  <th>Realizado</th>
                   <th>Ações</th>
                 </tr>
                 </thead>
@@ -69,14 +61,9 @@
                       </td>
                       <td v-tooltip="data.name">{{ data.name }}</td>
                       <td v-tooltip="data.project.name">{{ data.project.name }}</td>
-                      <td v-tooltip="data.sprint.name">{{ data.sprint.name }}</td>
-                      <td v-tooltip="data.epic.name">{{ data.epic.name }}</td>
-                      <td>{{ data.time_planned | secToHourMin }}</td>
-                      <td>{{ data.time_used | secToHourMin }}</td>
                       <td>
                         <div class="btn-group btn-group-sm">
-                          <button class="btn btn-sm btn-primary" type="button" v-on:click="goToTask(data.id)"><fa icon="pen-square"/></button>
-                          <button class="btn btn-sm btn-info" type="button" v-on:click="goToViewTask(data.id)"><fa icon="eye"/></button>
+                          <button class="btn btn-sm btn-primary" type="button" v-on:click="goToEpic(data.id)"><fa icon="pen-square"/></button>
                           <button class="btn btn-sm btn-danger" type="button" v-on:click="deleteID = data.id"><fa icon="trash"/></button>
                         </div>
                       </td>
@@ -91,22 +78,22 @@
               </div>
               <div class="col-6 text-center">
                 <div class="btn-group">
-                  <button class="btn btn-outline-primary" :disabled="tableData.current_page === 1" v-on:click="getTasks(1)">
+                  <button class="btn btn-outline-primary" :disabled="tableData.current_page === 1" v-on:click="getEpics(1)">
                     <fa icon="caret-left"/>
                     <fa icon="caret-left"/>
                   </button>
-                  <button class="btn btn-outline-primary" :disabled="tableData.current_page === 1" v-on:click="getTasks(tableData.current_page-1)">
+                  <button class="btn btn-outline-primary" :disabled="tableData.current_page === 1" v-on:click="getEpics(tableData.current_page-1)">
                     <fa icon="caret-left"/>
                   </button>
                   <button v-for="button in tableButtons" :key="button" class="btn"
                           :class="{'btn-outline-primary': button !== tableData.current_page, 'btn-primary': button === tableData.current_page}"
-                          v-on:click="getTasks(button)">
+                          v-on:click="getEpics(button)">
                     {{ button }}
                   </button>
-                  <button class="btn btn-outline-primary" :disabled="tableData.current_page === tableData.last_page" v-on:click="getTasks(tableData.current_page+1)">
+                  <button class="btn btn-outline-primary" :disabled="tableData.current_page === tableData.last_page" v-on:click="getEpics(tableData.current_page+1)">
                     <fa icon="caret-right"/>
                   </button>
-                  <button class="btn btn-outline-primary" :disabled="tableData.current_page === tableData.last_page" v-on:click="getTasks(tableData.last_page)">
+                  <button class="btn btn-outline-primary" :disabled="tableData.current_page === tableData.last_page" v-on:click="getEpics(tableData.last_page)">
                     <fa icon="caret-right"/>
                     <fa icon="caret-right"/>
                   </button>
@@ -128,7 +115,7 @@
         </div>
       </div>
     </div>
-    <button class="btn btn-circle btn-primary btn-add btn-lg" v-on:click="goToTask(null)">
+    <button class="btn btn-circle btn-primary btn-add btn-lg" v-on:click="goToEpic(null)">
       <fa icon="plus"></fa>
     </button>
   </div>
@@ -137,21 +124,19 @@
 <script>
     import Select2 from '../components/Select2';
     export default {
-        name: 'Tasks',
+        name: 'Epics',
         data: function () {
             return {
                 tableFilter: {
                     search: '',
                     status: '',
-                    projectId: '',
-                    category: '',
+                    project_id: '',
                     page: 1,
                     perPage: 15,
                 },
                 tableData: [],
                 statusOpts: [],
                 projectsOpts: [],
-                categoriesOpts: [],
                 deleteID: false,
                 timeout: false
             }
@@ -163,7 +148,7 @@
                 handler() {
                     if (this.timeout) clearTimeout(this.timeout);
                     this.timeout = setTimeout(() => {
-                        this.getTasks(false);
+                        this.getEpics(false);
                     }, 500);
                 },
             }
@@ -184,13 +169,13 @@
             }
         },
         methods: {
-            getTasks: function (page) {
+            getEpics: function (page) {
                 if (page) {
                     this.tableFilter.page = page;
                 }
 
                 this.$http({
-                    url: "/tasks",
+                    url: "/epics",
                     params: this.tableFilter
                 }).then(response => {
                     this.tableData = response.data;
@@ -198,14 +183,9 @@
                     this.tableData = []
                 })
             },
-            getTasksStatuses: function () {
+            getStatuses: function () {
                 return this.$http({
-                    url: '/task_statuses'
-                });
-            },
-            getTasksCategories: function () {
-                return this.$http({
-                    url: '/task_categories'
+                    url: '/default_statuses'
                 });
             },
             getProjects: function () {
@@ -214,9 +194,9 @@
                     params: {status: "Ativo"}
                 });
             },
-            deleteTask: function (id) {
+            deleteEpic: function (id) {
                 return this.$http({
-                    url: '/task/'+id,
+                    url: '/epic/'+id,
                     method: 'delete',
                 }).then(response => {
                     this.deleteID = false;
@@ -224,34 +204,27 @@
                         text: response.data.msg,
                         type: 'success'
                     });
-                    this.getTasks(false);
+                    this.getEpics(false);
                 });
             },
-            goToTask: function (id) {
+            goToEpic: function (id) {
                 this.$store.state.loading = true;
-                this.$router.push({ name: 'task', params: { id: id }});
-            },
-            goToViewTask: function (id) {
-                this.$store.state.loading = true;
-                this.$router.push({ name: 'view-task', params: { id: id }});
+                this.$router.push({ name: 'epic', params: { id: id }});
             }
         },
         mounted: function() {
-            this.getTasksStatuses().then(response => {
+            this.getStatuses().then(response => {
                 this.statusOpts = response.data
-                return this.getTasksCategories()
-            }).then(response => {
-                this.categoriesOpts = response.data
+                this.$store.state.loading = false;
                 return this.getProjects()
             }).then(response => {
                 for (let data of response.data) {
                     this.projectsOpts.push({name: data.name, value: data.id});
                 }
-                this.$store.state.loading = false;
             }).catch(() => {
-                this.$store.state.user = false;
-                this.$router.go(-100);
-                this.$router.replace('/');
+                // this.$store.state.user = false;
+                // this.$router.go(-100);
+                // this.$router.replace('/');
             })
         },
         components: {
