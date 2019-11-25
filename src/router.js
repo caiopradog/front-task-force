@@ -14,6 +14,7 @@ import Epics from "./views/Epics";
 import Epic from "./views/Epic";
 import Sprints from "./views/Sprints";
 import Sprint from "./views/Sprint";
+import Reward from "./views/Reward";
 
 Vue.use(Router);
 
@@ -45,6 +46,13 @@ export default new Router({
         component: Rewards,
         meta: {
             title: 'Recompensas'
+        }
+    }, {
+        path: '/reward/:id?',
+        name: 'reward',
+        component: Reward,
+        meta: {
+            title: 'Recompensa'
         }
     }, {
         path: '/projects',

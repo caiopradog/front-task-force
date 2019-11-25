@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueTheMask from 'vue-the-mask'
 import VTooltip from 'v-tooltip'
 import VCalendar from 'v-calendar'
+import money from 'v-money'
 import Notifications from 'vue-notification'
 import App from './App.vue'
 import router from './router'
@@ -21,6 +22,13 @@ Vue.use(VCalendar, {
     }
 })
 Vue.use(Notifications)
+Vue.use(money, {
+    decimal: ',',
+    thousands: '.',
+    prefix: '',
+    precision: 0,
+    masked: false
+})
 
 // JS imports
 import 'bootstrap'

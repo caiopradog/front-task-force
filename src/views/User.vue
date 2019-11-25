@@ -56,6 +56,18 @@
                   </template>
                 </div>
               </div>
+              <div class="col-3">
+                <div class="form-group">
+                  <label>Pontos Disponíveis</label>
+                  <input disabled class="form-control" placeholder="Email" v-model="user.current_score">
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="form-group">
+                  <label>XP</label>
+                  <input disabled class="form-control" placeholder="Email" v-model="user.total_score">
+                </div>
+              </div>
               <template v-if="$store.state.user.user_group_id == 1">
                 <div class="col-12">
                   <hr>

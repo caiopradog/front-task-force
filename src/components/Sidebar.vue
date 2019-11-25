@@ -41,14 +41,14 @@
           <fa icon="calendar"></fa>
         </span>
       </li>
-<!--      <li class="menu-item" v-on:click="goToPage('rewards')" :class="{'active': currentRoute.name.includes('reward')}">-->
-<!--        <span class="menu-name">-->
-<!--          Recompensas-->
-<!--        </span>-->
-<!--        <span class="menu-icon">-->
-<!--          <fa icon="money-bill-wave"></fa>-->
-<!--        </span>-->
-<!--      </li>-->
+      <li class="menu-item" v-on:click="goToPage('rewards')" :class="{'active': currentRoute.name.includes('reward')}">
+        <span class="menu-name">
+          Recompensas
+        </span>
+        <span class="menu-icon">
+          <fa icon="store"></fa>
+        </span>
+      </li>
 <!--      <li class="menu-item" v-on:click="goToPage('users')" :class="{'active': currentRoute.name.includes('user')}">-->
 <!--        <span class="menu-name">-->
 <!--          Usuários-->

@@ -20,7 +20,7 @@
       <div class="col-12">
         <div class="card">
           <div class="card-header">
-            Projetos
+            Épicos
           </div>
           <div class="card-body">
             <div class="row mb-3">
@@ -222,9 +222,9 @@
                     this.projectsOpts.push({name: data.name, value: data.id});
                 }
             }).catch(() => {
-                // this.$store.state.user = false;
-                // this.$router.go(-100);
-                // this.$router.replace('/');
+                this.$store.state.user = false;
+                this.$router.go(-100);
+                this.$router.replace('/');
             })
         },
         components: {

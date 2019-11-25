@@ -2,7 +2,7 @@
   <div class="header">
     <div class="row">
       <div class="col-12 text-right">
-        <div class="user-name" v-on:click="goToUser(user.id)">{{ user.name }}</div>
+        <div class="user-name" v-on:click="goToUser(user.id)">{{ user.name }} | Lvl: {{ userLvl }}</div>
         <img class="user-icon" v-on:click="goToUser(user.id)" src="user.png">
       </div>
     </div>
@@ -15,6 +15,9 @@
         computed: {
             user: function() {
                 return this.$store.state.user;
+            },
+            userLvl: function() {
+                return Math.floor(this.user.total_score/1000);
             },
             currentRoute: function () {
                 return this.$route;

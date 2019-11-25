@@ -20,7 +20,7 @@
       <div class="col-12">
         <div class="card">
           <div class="card-header">
-            Projetos
+            Sprints
           </div>
           <div class="card-body">
             <div class="row mb-3">
